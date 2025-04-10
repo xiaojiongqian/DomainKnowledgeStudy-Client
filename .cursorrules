@@ -113,7 +113,6 @@ DomainKnowledgeStudy-Client 是一个针对领域知识库的学习、出题和�
 
 ### 3. UI设计标准
 - 遵循 Material Design 设计规范 https://m3.material.io/  
-- 遵循 Figma 设计规范 https://www.figma.com/design/QeDZlKuZjNqYXgKDgK1Q8e/Figma-Design-System?node-id=0-1&t=0-0
 - 遵循 Tailwind CSS 设计规范 https://tailwindcss.com/  
 
 ### 4. 组件生成指南
