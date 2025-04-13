@@ -1,0 +1,345 @@
+---
+description: "Web UI设计规范，包含Material Design和Tailwind CSS的具体实现标准"
+globs: ["src/**/*.{vue,ts,scss}"]
+alwaysApply: true
+---
+
+# Web UI 设计标准
+
+## 1. Material Design 3 规范实现
+
+### 1.1 色彩系统
+```typescript
+// src/styles/theme.ts
+export const lightTheme = {
+  colors: {
+    // 主色调
+    primary: {
+      light: '#6750A4',  // 主色调
+      container: '#EADDFF', // 主色调容器
+      onContainer: '#21005E' // 容器上文字
+    },
+    // 次要色调
+    secondary: {
+      light: '#625B71',
+      container: '#E8DEF8',
+      onContainer: '#1D192B'
+    },
+    // 强调色
+    tertiary: {
+      light: '#7D5260',
+      container: '#FFD8E4',
+      onContainer: '#31111D'
+    },
+    // 错误色
+    error: {
+      light: '#B3261E',
+      container: '#F9DEDC',
+      onContainer: '#410E0B'
+    },
+    // 背景色
+    background: {
+      light: '#FFFBFE',
+      surface: '#FFFBFE',
+      surfaceVariant: '#E7E0EC'
+    }
+  }
+}
+```
+
+### 1.2 排版系统
+```typescript
+// src/styles/typography.ts
+export const typography = {
+  // 大标题
+  display: {
+    large: {
+      fontSize: '57px',
+      lineHeight: '64px',
+      letterSpacing: '-0.25px',
+      fontWeight: '400'
+    },
+    medium: {
+      fontSize: '45px',
+      lineHeight: '52px',
+      letterSpacing: '0px',
+      fontWeight: '400'
+    }
+  },
+  // 标题
+  headline: {
+    large: {
+      fontSize: '32px',
+      lineHeight: '40px',
+      letterSpacing: '0px',
+      fontWeight: '400'
+    }
+  },
+  // 正文
+  body: {
+    large: {
+      fontSize: '16px',
+      lineHeight: '24px',
+      letterSpacing: '0.5px',
+      fontWeight: '400'
+    },
+    medium: {
+      fontSize: '14px',
+      lineHeight: '20px',
+      letterSpacing: '0.25px',
+      fontWeight: '400'
+    }
+  }
+}
+```
+
+### 1.3 组件设计规范
+
+#### 1.3.1 海拔系统
+```scss
+// src/styles/_elevation.scss
+@mixin elevation($level) {
+  @if $level == 0 {
+    box-shadow: none;
+  } @else if $level == 1 {
+    box-shadow: 0px 1px 3px rgba(0,0,0,0.12), 
+                0px 1px 2px rgba(0,0,0,0.14);
+  } @else if $level == 2 {
+    box-shadow: 0px 2px 6px rgba(0,0,0,0.15), 
+                0px 1px 2px rgba(0,0,0,0.30);
+  } @else if $level == 3 {
+    box-shadow: 0px 4px 8px rgba(0,0,0,0.18), 
+                0px 3px 6px rgba(0,0,0,0.16);
+  }
+}
+```
+
+#### 1.3.2 圆角规范
+```scss
+// src/styles/_shape.scss
+$shape-corner: (
+  'none': 0,
+  'extra-small': 4px,
+  'small': 8px,
+  'medium': 12px,
+  'large': 16px,
+  'extra-large': 28px,
+  'full': 9999px
+);
+```
+
+#### 1.3.3 间距规范
+```scss
+// src/styles/_spacing.scss
+$spacing: (
+  'none': 0,
+  'extra-small': 4px,
+  'small': 8px,
+  'medium': 16px,
+  'large': 24px,
+  'extra-large': 32px
+);
+```
+
+## 2. Tailwind CSS 配置规范
+
+### 2.1 基础配置
+```javascript
+// tailwind.config.js
+module.exports = {
+  theme: {
+    extend: {
+      // 扩展颜色
+      colors: {
+        primary: {
+          DEFAULT: 'var(--color-primary)',
+          container: 'var(--color-primary-container)'
+        },
+        secondary: {
+          DEFAULT: 'var(--color-secondary)',
+          container: 'var(--color-secondary-container)'
+        }
+      },
+      // 扩展字体大小
+      fontSize: {
+        'display-lg': ['57px', '64px'],
+        'display-md': ['45px', '52px'],
+        'headline-lg': ['32px', '40px'],
+        'body-lg': ['16px', '24px'],
+        'body-md': ['14px', '20px']
+      },
+      // 扩展阴影
+      boxShadow: {
+        'elevation-1': '0px 1px 3px rgba(0,0,0,0.12), 0px 1px 2px rgba(0,0,0,0.14)',
+        'elevation-2': '0px 2px 6px rgba(0,0,0,0.15), 0px 1px 2px rgba(0,0,0,0.30)',
+        'elevation-3': '0px 4px 8px rgba(0,0,0,0.18), 0px 3px 6px rgba(0,0,0,0.16)'
+      }
+    }
+  }
+}
+```
+
+## 3. 组件设计规范
+
+### 3.1 按钮组件
+- 使用 Material Design 的按钮类型：
+  * Filled（填充）
+  * Outlined（描边）
+  * Text（文本）
+  * Elevated（海拔）
+  * Tonal（色调）
+- 状态变化：
+  * Default（默认）
+  * Hover（悬停）
+  * Pressed（按下）
+  * Disabled（禁用）
+- 尺寸规范：
+  * Small: 高度32px
+  * Medium: 高度40px
+  * Large: 高度48px
+
+### 3.2 表单组件
+- 输入框：
+  * 统一使用 Outlined 风格
+  * 必须包含标签和提示文本
+  * 错误状态显示红色边框和提示
+- 选择器：
+  * 下拉菜单最大高度240px
+  * 选项高度40px
+  * 支持搜索和多选
+
+### 3.3 列表和表格
+- 列表项：
+  * 高度48px或72px（带描述）
+  * 左侧图标可选
+  * 右侧操作区域可选
+- 表格：
+  * 表头固定
+  * 行高56px
+  * 支持排序和筛选
+  * 分页控件位于底部
+
+### 3.4 对话框和弹出层
+- 对话框：
+  * 宽度：根据内容自适应，最小360px
+  * 高度：最大80vh
+  * 圆角：28px
+  * 标题栏高度：64px
+- 弹出提示：
+  * Toast提示：底部居中，持续3秒
+  * Snackbar：左下角，可包含操作按钮
+
+## 4. 响应式设计规范
+
+### 4.1 断点设置
+```javascript
+// tailwind.config.js
+module.exports = {
+  theme: {
+    screens: {
+      'sm': '640px',   // 手机横屏
+      'md': '768px',   // 平板竖屏
+      'lg': '1024px',  // 平板横屏
+      'xl': '1280px',  // 桌面端
+      '2xl': '1536px'  // 大屏幕
+    }
+  }
+}
+```
+
+### 4.2 栅格系统
+- 移动端：4列栅格
+- 平板：8列栅格
+- 桌面：12列栅格
+- 间距：
+  * 移动端：16px
+  * 平板：24px
+  * 桌面：24px
+
+### 4.3 容器宽度
+- sm: 100%
+- md: 720px
+- lg: 960px
+- xl: 1140px
+- 2xl: 1320px
+
+## 5. 动画与过渡
+
+### 5.1 动画时长
+```scss
+// src/styles/_animation.scss
+$animation-duration: (
+  'very-fast': 100ms,
+  'fast': 200ms,
+  'normal': 300ms,
+  'slow': 400ms,
+  'very-slow': 500ms
+);
+```
+
+### 5.2 缓动函数
+```scss
+$easing: (
+  'standard': cubic-bezier(0.4, 0, 0.2, 1),
+  'decelerate': cubic-bezier(0, 0, 0.2, 1),
+  'accelerate': cubic-bezier(0.4, 0, 1, 1)
+);
+```
+
+## 6. 图标规范
+- 使用 Material Icons 或 自定义 SVG 图标
+- 尺寸规范：
+  * 小图标：16x16
+  * 标准图标：24x24
+  * 大图标：32x32
+- 统一使用 currentColor 以继承文字颜色
+
+## 7. 无障碍设计
+- 颜色对比度符合 WCAG 2.1 标准
+- 所有可交互元素可通过键盘访问
+- 提供适当的 ARIA 标签
+- 支持屏幕阅读器
+- 文本最小尺寸12px
+
+## 8. 暗色主题支持
+```typescript
+// src/styles/theme.ts
+export const darkTheme = {
+  colors: {
+    primary: {
+      dark: '#D0BCFF',
+      container: '#4F378B',
+      onContainer: '#EADDFF'
+    },
+    secondary: {
+      dark: '#CCC2DC',
+      container: '#4A4458',
+      onContainer: '#E8DEF8'
+    },
+    background: {
+      dark: '#1C1B1F',
+      surface: '#1C1B1F',
+      surfaceVariant: '#49454F'
+    }
+  }
+}
+```
+
+## 9. 性能优化建议
+- 使用 CSS 合并和压缩
+- 图片懒加载
+- 组件按需加载
+- 优先使用 CSS 实现动画
+- 避免不必要的嵌套选择器
+- 合理使用 will-change 属性
+
+## 10. 最佳实践检查清单
+- [ ] 组件是否遵循设计规范
+- [ ] 颜色是否符合主题系统
+- [ ] 字体是否使用正确的等级
+- [ ] 间距是否统一
+- [ ] 响应式是否完善
+- [ ] 动画是否流畅
+- [ ] 无障碍是否支持
+- [ ] 暗色主题是否正确
+- [ ] 性能是否优化

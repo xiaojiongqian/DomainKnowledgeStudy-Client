@@ -1,137 +1,121 @@
 <template>
   <div class="home-container">
-    <h1 class="welcome-title">欢迎使用领域知识学习系统</h1>
+    <h1>领域知识学习系统</h1>
+    <p class="subtitle">通过AI工具和领域知识库，提供高效的学习和考核平台，帮助您系统地掌握专业知识</p>
     
-    <div class="card-container">
-      <el-row :gutter="20">
-        <el-col :span="8" v-for="(item, index) in functionCards" :key="index">
-          <el-card class="function-card" @click="navigateTo(item.path)">
-            <div class="card-content">
-              <el-icon class="card-icon" :size="40">
-                <component :is="item.icon" />
-              </el-icon>
-              <h3>{{ item.title }}</h3>
-              <p>{{ item.description }}</p>
-            </div>
-          </el-card>
-        </el-col>
-      </el-row>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon">📖</div>
+        <h3>知识学习</h3>
+        <p>基于知识库生成学习大纲，在交互式问答界面中学习知识点</p>
+        <router-link to="/learning" class="feature-link">开始学习</router-link>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">🏆</div>
+        <h3>知识测验</h3>
+        <p>从题库随机抽题，选择题自动批改，问答题由LLM批改</p>
+        <router-link to="/exam" class="feature-link">开始测验</router-link>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3>学习统计</h3>
+        <p>查看学习进展、考试结果分析，掌握学习薄弱环节</p>
+        <router-link to="/statistics" class="feature-link">查看统计</router-link>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">💡</div>
+        <h3>知识洞察</h3>
+        <p>智能分析知识点关系，提供个性化学习建议</p>
+        <router-link to="/insight-spot" class="feature-link">探索洞察</router-link>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useRouter } from 'vue-router'
-import { Reading, Edit, Collection, Setting, User } from '@element-plus/icons-vue'
-
-const router = useRouter()
-
-const functionCards = [
-  {
-    title: '知识学习',
-    description: '浏览和掌握领域知识，通过交互式学习提升理解',
-    icon: Reading,
-    path: '/learning'
-  },
-  {
-    title: '考试',
-    description: '进行在线考试，检验学习成果',
-    icon: Edit,
-    path: '/exam'
-  },
-  {
-    title: '题库管理',
-    description: '管理考试题目，包括添加、修改和删除题目',
-    icon: Collection,
-    path: '/question-bank'
-  },
-  {
-    title: '系统配置',
-    description: '配置系统参数，管理用户权限',
-    icon: Setting,
-    path: '/configuration'
-  },
-  {
-    title: '个人信息',
-    description: '查看和修改个人信息，管理学习记录',
-    icon: User,
-    path: '/profile'
-  }
-]
-
-const navigateTo = (path: string) => {
-  router.push(path)
-}
+// 首页组件逻辑
 </script>
 
 <style scoped>
 .home-container {
-  padding: 20px;
   max-width: 1200px;
   margin: 0 auto;
+  padding: 40px 20px;
 }
 
-.welcome-title {
+h1 {
+  font-size: 32px;
+  color: var(--primary-color);
+  margin-bottom: 16px;
   text-align: center;
-  margin-bottom: 40px;
-  color: #303133;
-  font-size: 24px;
 }
 
-.card-container {
-  margin: 0 auto;
-}
-
-.function-card {
-  height: 100%;
-  margin-bottom: 20px;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.function-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-}
-
-.card-content {
+.subtitle {
+  font-size: 18px;
+  color: #666;
   text-align: center;
-  padding: 30px 20px;
-  height: 100%;
+  max-width: 800px;
+  margin: 0 auto 60px;
+  line-height: 1.5;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+}
+
+.feature-card {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 30px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s, box-shadow 0.3s;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  text-align: center;
 }
 
-.card-icon {
+.feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.feature-icon {
+  font-size: 48px;
   margin-bottom: 20px;
-  color: #409EFF;
-  font-size: 40px;
 }
 
-.card-content h3 {
-  margin: 10px 0;
-  color: #303133;
-  font-size: 18px;
+.feature-card h3 {
+  font-size: 20px;
+  margin-bottom: 12px;
+  color: #333;
 }
 
-.card-content p {
-  color: #606266;
-  font-size: 14px;
+.feature-card p {
+  color: #666;
   line-height: 1.5;
-  margin: 0;
-}
-
-:deep(.el-row) {
-  margin-left: -10px !important;
-  margin-right: -10px !important;
-}
-
-:deep(.el-col) {
-  padding-left: 10px !important;
-  padding-right: 10px !important;
   margin-bottom: 20px;
-  height: 220px;
+  flex-grow: 1;
+}
+
+.feature-link {
+  display: inline-block;
+  padding: 8px 20px;
+  background-color: var(--primary-color);
+  color: white;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.feature-link:hover {
+  background-color: #5641a5;
+  text-decoration: none;
 }
 </style> 

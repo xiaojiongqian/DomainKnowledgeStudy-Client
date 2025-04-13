@@ -111,11 +111,7 @@ DomainKnowledgeStudy-Client 是一个针对领域知识库的学习、出题和�
  * HTML/Vue 模板中多行标签右尖括号>独占一行。
  * 启用 Prettier 后禁用与其冲突的 ESLint 规则。
 
-### 3. UI设计标准
-- 遵循 Material Design 设计规范 https://m3.material.io/  
-- 遵循 Tailwind CSS 设计规范 https://tailwindcss.com/  
-
-### 4. 组件生成指南
+### 3. 组件生成指南
 - 采用组件组合模式
 - 定义正确的 props 类型
 - 使用合适的状态管理方案
@@ -124,7 +120,7 @@ DomainKnowledgeStudy-Client 是一个针对领域知识库的学习、出题和�
 - 遵循生命周期最佳实践
 - 优化渲染性能
 
-### 5. 类型系统
+### 4. 类型系统
 - 开启严格类型检查
 - 正确定义 interfaces
 - 正确使用泛型（generics）
@@ -133,7 +129,7 @@ DomainKnowledgeStudy-Client 是一个针对领域知识库的学习、出题和�
 - 对复杂类型进行文档说明
 - 避免 any 类型
 
-### 6. API 集成
+### 5. API 集成
 - 遵循 RESTful 规范
 - 实现完善错误处理
 - 使用类型安全请求
@@ -142,7 +138,7 @@ DomainKnowledgeStudy-Client 是一个针对领域知识库的学习、出题和�
 - 完善 API 使用文档
 - 实施有效缓存策略
 
-### 7. 测试要求
+### 6. 测试要求
 - 测试规范, 遵循 Vue Test Utils 要求 https://test-utils.vuejs.org/   
 - 单元测试要求，覆盖率90%以上，在提交代码前，需要运行 `npm run test:unit` 检查单元测试覆盖率
 - 接口测试要求，覆盖率100%，在提交代码前，需要运行 `npm run test:api` 检查接口测试覆盖率
@@ -154,7 +150,7 @@ DomainKnowledgeStudy-Client 是一个针对领域知识库的学习、出题和�
 - 保持高测试覆盖率
 - 记录测试案例
 
-### 8. 安全指南
+### 7. 安全指南
 - 验证所有输入
 - 对数据输出进行消毒
 - 正确处理认证问题
@@ -163,7 +159,7 @@ DomainKnowledgeStudy-Client 是一个针对领域知识库的学习、出题和�
 - 正确配置 CORS
 - 使用安全依赖
 
-### 9. 性能规则
+### 8. 性能规则
 - 实现代码分割
 - 使用 Lazy Loading
 - 优化 Bundle 大小
@@ -172,7 +168,7 @@ DomainKnowledgeStudy-Client 是一个针对领域知识库的学习、出题和�
 - 优化资源加载
 - 遵循性能最佳实践
 
-### 10. 文档要求
+### 9. 文档要求
 - 文档需清晰、简洁
 - 包含 JSDoc 注释
 - 提供使用示例

@@ -1,11 +1,12 @@
 <template>
   <div class="question-bank-container">
-    <h2>题库管理</h2>
-    <p>题库管理功能正在开发中...</p>
+    <h1>题库管理</h1>
+    <p>题库管理页面正在开发中...</p>
   </div>
 </template>
 
 <script setup lang="ts">
+// 题库视图组件逻辑
 </script>
 
 <style scoped>

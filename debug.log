@@ -1,0 +1,267 @@
+开始调试应用...
+环境信息:
+Node版本: v20.17.0
+NPM版本: 10.8.2
+操作系统: Darwin MacBook-Air.local 24.3.0 Darwin Kernel Version 24.3.0: Thu Jan  2 20:24:23 PST 2025; root:xnu-11215.81.4~3/RELEASE_ARM64_T8122 arm64
+
+项目目录结构:
+total 256
+drwxr-xr-x  24 vik.qian  staff    768  4 10 20:01 .
+drwxr-xr-x  27 vik.qian  staff    864  4  2 16:04 ..
+drwxr-xr-x@  3 vik.qian  staff     96  4  7 15:51 .cursor
+-rw-r--r--@  1 vik.qian  staff   7944  4 10 12:00 .cursorrules
+-rw-r--r--@  1 vik.qian  staff     67  4  8 19:39 .env.development
+-rw-r--r--@  1 vik.qian  staff     82  4  8 19:39 .env.production
+drwxr-xr-x@ 15 vik.qian  staff    480  4 10 10:56 .git
+-rw-r--r--@  1 vik.qian  staff    358  4  8 13:50 .gitignore
+-rw-r--r--@  1 vik.qian  staff   1060  4  8 19:39 LICENSE
+-rw-r--r--@  1 vik.qian  staff   2698  4  8 19:45 README.md
+-rw-r--r--@  1 vik.qian  staff    250  4 10 20:01 debug.log
+-rw-r--r--@  1 vik.qian  staff      1  4 10 20:00 debug.sh
+-rwxr-xr-x@  1 vik.qian  staff   1981  4 10 20:00 debug_app.sh
+drwxr-xr-x@  4 vik.qian  staff    128  4 10 19:31 design
+drwxr-xr-x@  6 vik.qian  staff    192  4  8 19:39 docs
+-rw-r--r--@  1 vik.qian  staff    350  4 10 19:56 index.html
+drwxr-xr-x@ 78 vik.qian  staff   2496  4 10 19:57 node_modules
+-rw-r--r--@  1 vik.qian  staff  64566  4 10 19:56 package-lock.json
+-rw-r--r--@  1 vik.qian  staff    493  4 10 19:56 package.json
+drwxr-xr-x@ 13 vik.qian  staff    416  4 10 19:53 src
+-rw-r--r--@  1 vik.qian  staff    753  4 10 19:57 tsconfig.json
+-rw-r--r--@  1 vik.qian  staff    213  4 10 19:57 tsconfig.node.json
+-rw-r--r--@  1 vik.qian  staff    293  4 10 19:56 vite.config.ts
+-rw-r--r--@  1 vik.qian  staff    261  4  8 19:39 vitest.config.ts
+
+src目录结构:
+total 24
+drwxr-xr-x@ 13 vik.qian  staff  416  4 10 19:53 .
+drwxr-xr-x  24 vik.qian  staff  768  4 10 20:01 ..
+-rw-r--r--@  1 vik.qian  staff  864  4 10 19:50 App.vue
+drwxr-xr-x@  4 vik.qian  staff  128  4 10 19:54 assets
+drwxr-xr-x@  5 vik.qian  staff  160  4 10 19:50 components
+-rw-r--r--@  1 vik.qian  staff  369  4 10 19:53 env.d.ts
+drwxr-xr-x@  3 vik.qian  staff   96  4 10 19:51 layouts
+-rw-r--r--@  1 vik.qian  staff  411  4 10 19:56 main.ts
+drwxr-xr-x@  3 vik.qian  staff   96  4 10 19:51 router
+drwxr-xr-x@  3 vik.qian  staff   96  4 10 19:55 services
+drwxr-xr-x@  2 vik.qian  staff   64  4 10 19:50 stores
+drwxr-xr-x@  2 vik.qian  staff   64  4 10 19:50 utils
+drwxr-xr-x@ 10 vik.qian  staff  320  4 10 19:54 views
+
+package.json内容:
+{
+  "name": "domain-knowledge-study-client",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "axios": "^1.8.4",
+    "element-plus": "^2.9.7",
+    "pinia": "^2.3.1",
+    "vue": "^3.5.13",
+    "vue-router": "^4.5.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.6.2",
+    "typescript": "^5.8.3",
+    "vite": "^5.4.17",
+    "vue-tsc": "^1.8.27"
+  }
+}
+
+主入口文件(main.ts):
+import { createApp } from 'vue'
+import { createPinia } from 'pinia'
+import ElementPlus from 'element-plus'
+import 'element-plus/dist/index.css'
+import zhCn from 'element-plus/es/locale/lang/zh-cn'
+import App from './App.vue'
+import router from './router'
+
+import './assets/main.css'
+
+const app = createApp(App)
+
+app.use(createPinia())
+app.use(router)
+app.use(ElementPlus, {
+  locale: zhCn
+})
+
+app.mount('#app') 
+路由配置:
+import { createRouter, createWebHistory } from 'vue-router'
+import DefaultLayout from '../layouts/DefaultLayout.vue'
+
+const router = createRouter({
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes: [
+    {
+      path: '/',
+      component: DefaultLayout,
+      children: [
+        {
+          path: '',
+          name: 'home',
+          component: () => import('../views/HomeView.vue')
+        },
+        {
+          path: 'learning',
+          name: 'learning',
+          component: () => import('../views/LearningView.vue')
+        },
+        {
+          path: 'insight-spot',
+          name: 'insight-spot',
+          component: () => import('../views/InsightSpotView.vue')
+        },
+        {
+          path: 'exam',
+          name: 'exam',
+          component: () => import('../views/ExamView.vue')
+        },
+        {
+          path: 'question-bank',
+          name: 'question-bank',
+          component: () => import('../views/QuestionBankView.vue')
+        },
+        {
+          path: 'statistics',
+          name: 'statistics',
+          component: () => import('../views/StatisticsView.vue')
+        },
+        {
+          path: 'profile',
+          name: 'profile',
+          component: () => import('../views/ProfileView.vue')
+        },
+        {
+          path: 'settings',
+          name: 'settings',
+          component: () => import('../views/SettingsView.vue')
+        }
+      ]
+    }
+  ]
+})
+
+export default router 
+App.vue:
+<template>
+  <router-view />
+</template>
+
+<script setup lang="ts">
+// App组件逻辑
+</script>
+
+<style>
+/* 全局样式 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #333;
+  background-color: #f5f7fa;
+}
+
+/* 主色调 - 遵循Material Design规范 */
+:root {
+  --primary-color: #6750A4;
+  --primary-light: #D0BCFF;
+  --primary-container: #EADDFF;
+  --on-primary-container: #21005E;
+  --secondary-color: #625B71;
+  --background-color: #FFFBFE;
+  --surface-color: #FFFBFE;
+  --error-color: #B3261E;
+}
+
+/* 通用布局容器 */
+.app-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 防止元素超出容器 */
+img, svg {
+  max-width: 100%;
+  height: auto;
+}
+</style> 
+安装的npm包:
+domain-knowledge-study-client@0.1.0 /Users/vik.qian/study/dks_client
+├── @vitejs/plugin-vue@4.6.2
+├── axios@1.8.4
+├── element-plus@2.9.7
+├── pinia@2.3.1
+├── typescript@5.8.3
+├── vite@5.4.17
+├── vue-router@4.5.0
+├── vue-tsc@1.8.27
+└── vue@3.5.13
+
+
+尝试构建项目:
+
+> domain-knowledge-study-client@0.1.0 build
+> vite build
+
+vite v5.4.17 building for production...
+transforming...
+✓ 1439 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                              0.43 kB │ gzip:   0.33 kB
+dist/assets/ExamView-BoXe8blk.css            0.05 kB │ gzip:   0.07 kB
+dist/assets/ProfileView-D9BPOiK-.css         0.05 kB │ gzip:   0.07 kB
+dist/assets/SettingsView-C3S95yHj.css        0.05 kB │ gzip:   0.07 kB
+dist/assets/StatisticsView-CqS_SHJ6.css      0.05 kB │ gzip:   0.07 kB
+dist/assets/QuestionBankView-BES4pt82.css    0.06 kB │ gzip:   0.08 kB
+dist/assets/LearningView-BuMBOXiG.css        0.31 kB │ gzip:   0.20 kB
+dist/assets/HomeView-BEJmqKQb.css            1.26 kB │ gzip:   0.51 kB
+dist/assets/InsightSpotView-D-SK0hK3.css     1.92 kB │ gzip:   0.61 kB
+dist/assets/index-D8dpPREF.css             337.14 kB │ gzip:  46.81 kB
+dist/assets/ExamView-BPRq0XZg.js             0.29 kB │ gzip:   0.30 kB
+dist/assets/SettingsView-BqS1_4iH.js         0.30 kB │ gzip:   0.30 kB
+dist/assets/ProfileView-C-XjIcZx.js          0.31 kB │ gzip:   0.30 kB
+dist/assets/StatisticsView-C52fMHIL.js       0.31 kB │ gzip:   0.30 kB
+dist/assets/QuestionBankView-B3tSA-NN.js     0.32 kB │ gzip:   0.31 kB
+dist/assets/LearningView-BIg24o0J.js         0.47 kB │ gzip:   0.41 kB
+dist/assets/HomeView-C4Do4Ftt.js             1.55 kB │ gzip:   0.96 kB
+dist/assets/InsightSpotView-DpKs3K9Q.js      4.09 kB │ gzip:   2.64 kB
+dist/assets/index-ByjOKONQ.js              949.41 kB │ gzip: 314.22 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 2.11s
+
+启动开发服务器:
+开发服务器进程ID: 13119
+
+> domain-knowledge-study-client@0.1.0 dev
+> vite
+
+
+  VITE v5.4.17  ready in 113 ms
+
+  ➜  Local:   http://localhost:3000/
+  ➜  Network: use --host to expose
+开发服务器正在运行
+
+尝试访问 http://localhost:3000:
+200
+已终止开发服务器

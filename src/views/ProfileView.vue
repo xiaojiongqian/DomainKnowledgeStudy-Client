@@ -1,11 +1,12 @@
 <template>
   <div class="profile-container">
-    <h2>个人信息</h2>
-    <p>个人信息功能正在开发中...</p>
+    <h1>个人信息</h1>
+    <p>个人信息页面正在开发中...</p>
   </div>
 </template>
 
 <script setup lang="ts">
+// 个人信息视图组件逻辑
 </script>
 
 <style scoped>
