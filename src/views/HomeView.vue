@@ -5,28 +5,36 @@
     
     <div class="feature-grid">
       <div class="feature-card">
-        <div class="feature-icon">📖</div>
+        <div class="feature-icon">
+          <img src="@/assets/Icon_learning.svg" alt="知识学习" />
+        </div>
         <h3>知识学习</h3>
         <p>基于知识库生成学习大纲，在交互式问答界面中学习知识点</p>
         <router-link to="/learning" class="feature-link">开始学习</router-link>
       </div>
       
       <div class="feature-card">
-        <div class="feature-icon">🏆</div>
+        <div class="feature-icon">
+          <img src="@/assets/Icon_exam.svg" alt="知识测验" />
+        </div>
         <h3>知识测验</h3>
         <p>从题库随机抽题，选择题自动批改，问答题由LLM批改</p>
         <router-link to="/exam" class="feature-link">开始测验</router-link>
       </div>
       
       <div class="feature-card">
-        <div class="feature-icon">📊</div>
+        <div class="feature-icon">
+          <img src="@/assets/Icon_statistics.svg" alt="学习统计" />
+        </div>
         <h3>学习统计</h3>
         <p>查看学习进展、考试结果分析，掌握学习薄弱环节</p>
         <router-link to="/statistics" class="feature-link">查看统计</router-link>
       </div>
       
       <div class="feature-card">
-        <div class="feature-icon">💡</div>
+        <div class="feature-icon">
+          <img src="@/assets/Icon_insightspot.svg" alt="知识洞察" />
+        </div>
         <h3>知识洞察</h3>
         <p>智能分析知识点关系，提供个性化学习建议</p>
         <router-link to="/insight-spot" class="feature-link">探索洞察</router-link>
@@ -86,8 +94,30 @@ h1 {
 }
 
 .feature-icon {
-  font-size: 48px;
+  width: 64px;
+  height: 64px;
   margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.feature-icon img {
+  /* Force image to fill the container */
+  width: 100%;
+  height: 100%;
+  /* Remove max-width/max-height */
+  /* max-width: 100%; */
+  /* max-height: 100%; */
+
+  /* Remove the default filter */
+  /* filter: brightness(0) saturate(100%) invert(35%) sepia(43%) saturate(1546%) hue-rotate(228deg) brightness(90%) contrast(85%); */
+  transition: filter 0.3s ease; /* Add transition for smooth color change */
+}
+
+.feature-card:hover .feature-icon img {
+  /* Apply filter only on card hover */
+  filter: brightness(0) saturate(100%) invert(35%) sepia(43%) saturate(1546%) hue-rotate(228deg) brightness(90%) contrast(85%);
 }
 
 .feature-card h3 {

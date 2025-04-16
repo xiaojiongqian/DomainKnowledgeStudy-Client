@@ -12,8 +12,7 @@
         <div class="user-menu">
           <el-dropdown trigger="click">
             <div class="user-info">
-              <!-- 使用占位头像，或替换为真实头像逻辑 -->
-              <el-avatar :size="32">U</el-avatar>
+              <el-avatar :size="32">{{ userInitial }}</el-avatar> <!-- Display initial -->
               <span class="username">{{ userName }}</span>
               <el-icon class="el-icon--right"><arrow-down /></el-icon>
             </div>
@@ -33,72 +32,104 @@
       </div>
     </header>
 
-    <!-- 主容器 -->
+    <!-- 主容器（三栏布局） -->
     <div class="main-container">
-      <!-- 侧边栏 -->
-      <aside class="sidebar">
-        <div class="nav-menu">
-          <router-link to="/learning" class="nav-item" active-class="active">
-            <img src="../assets/Icon_learning.svg" alt="Learning" class="nav-icon" />
-            <span>Learning</span>
-          </router-link>
-          <router-link to="/exam" class="nav-item" active-class="active">
-            <img src="../assets/Icon_exam.svg" alt="Exam" class="nav-icon" />
-            <span>Exam</span>
-          </router-link>
-          <router-link to="/statistics" class="nav-item" active-class="active">
-             <img src="../assets/Icon_statistics.svg" alt="Statistics" class="nav-icon" />
-            <span>Statistics</span>
-          </router-link>
-
-          <div class="nav-divider"></div>
-
-          <router-link to="/insight-spot" class="nav-item" active-class="active">
-            <img src="../assets/Icon_insightspot.svg" alt="Insight Spot" class="nav-icon" />
-            <span>Insight Spot</span>
-          </router-link>
+      <!-- 左侧第一栏：全局导航 -->
+      <aside class="global-sidebar">
+        <div class="global-nav-scrollable">
+          <div class="nav-menu">
+            <router-link to="/learning" class="nav-item" active-class="active">
+              <img src="../assets/Icon_learning.svg" alt="Learning" class="nav-icon" />
+              <span>Learning</span>
+            </router-link>
+            <router-link to="/exam" class="nav-item" active-class="active">
+              <img src="../assets/Icon_exam.svg" alt="Exam" class="nav-icon" />
+              <span>Exam</span>
+            </router-link>
+            <router-link to="/statistics" class="nav-item" active-class="active">
+              <img src="../assets/Icon_statistics.svg" alt="Statistics" class="nav-icon" />
+              <span>Statistics</span>
+            </router-link>
+            <div class="nav-divider"></div>
+            <router-link to="/insight-spot" class="nav-item" active-class="active">
+              <img src="../assets/Icon_insightspot.svg" alt="Insight Spot" class="nav-icon" />
+              <span>Insight Spot</span>
+            </router-link>
+            <router-link to="/question-bank" class="nav-item" active-class="active">
+              <img src="../assets/Icon_quiz.svg" alt="Question Bank" class="nav-icon" />
+              <span>Question Bank</span>
+            </router-link>
+            <router-link to="/sys-manage" class="nav-item" active-class="active">
+              <img src="../assets/Icon_manage_accounts.svg" alt="Sys Manage" class="nav-icon" />
+              <span>Sys Manage</span>
+            </router-link>
+          </div>
         </div>
-
-        <!-- 用户信息与退出 -->
-        <div class="sidebar-footer">
-           <div class="footer-user-info">
-             <el-avatar :size="40">JS</el-avatar> <!-- 调整头像大小 -->
-             <div class="user-details">
-               <div class="user-name">{{ userName }}</div>
-               <div class="user-email">{{ userEmail }}</div>
-             </div>
-           </div>
-           <div class="footer-actions">
-             <router-link to="/settings" class="footer-action-item">
-               <img src="../assets/Icon_settings.svg" alt="Settings" class="action-icon" />
-               <span>Settings</span>
-             </router-link>
-             <div class="footer-action-item" @click="logout">
-               <img src="../assets/Icon_logout.svg" alt="Log Out" class="action-icon" /> <!-- Changed icon to logout -->
-               <span>Log Out</span> <!-- Changed text from Sign Out -->
-             </div>
+        <!-- 固定底部的用户信息与退出 -->
+        <div class="global-sidebar-footer">
+          <div class="footer-user-info">
+            <el-avatar :size="40">{{ userInitial }}</el-avatar>
+            <div class="user-details">
+              <div class="user-name">{{ userName }}</div>
+              <div class="user-email">{{ userEmail }}</div>
+            </div>
+          </div>
+          <div class="footer-actions">
+            <router-link to="/settings" class="footer-action-item">
+              <img src="../assets/Icon_settings.svg" alt="Settings" class="action-icon" />
+              <span>Settings</span>
+            </router-link>
+            <div class="footer-action-item" @click="logout">
+              <img src="../assets/Icon_logout.svg" alt="Log Out" class="action-icon" />
+              <span>Log Out</span>
+            </div>
           </div>
         </div>
       </aside>
 
-      <!-- 主内容区 -->
-      <main class="main-content">
-        <router-view />
+      <!-- 中间第二栏：二级导航 (内容由视图提供) -->
+      <!-- Conditionally render secondary nav only if the route defines it -->
+      <aside class="secondary-nav-container" v-if="hasSecondaryNav">
+        <router-view name="secondaryNav"></router-view>
+      </aside>
+
+      <!-- 右侧第三栏：主内容区容器 -->
+      <main class="main-content-area">
+        <router-view name="mainContent"></router-view>
       </main>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { ArrowDown } from '@element-plus/icons-vue'
-// import { useRouter } from 'vue-router' // 如果需要路由跳转
+import { useRouter, useRoute } from 'vue-router' // Import useRoute
 
-// const router = useRouter() // 如果需要路由跳转
+const router = useRouter()
+const route = useRoute() // Use route
 
 // 模拟用户信息，实际应从状态管理或API获取
 const userName = ref('John Smith')
 const userEmail = ref('johnsmith@email.ab')
+
+// 计算用户名的首字母
+const userInitial = computed(() => {
+  return userName.value ? userName.value.charAt(0).toUpperCase() : 'U'
+})
+
+// Check if the current matched route has a secondaryNav component defined
+const hasSecondaryNav = computed(() => {
+  // Check the deepest matched route that has components defined
+  for (let i = route.matched.length - 1; i >= 0; i--) {
+    const record = route.matched[i];
+    // Ensure the record and its components object exist before checking for secondaryNav
+    if (record && record.components && record.components.secondaryNav) {
+      return true;
+    }
+  }
+  return false;
+});
 
 const logout = () => {
   console.log('User logged out')
@@ -113,7 +144,7 @@ const logout = () => {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: var(--background-color); /* 使用 M3 背景色 */
+  overflow: hidden; /* 防止根容器滚动 */
 }
 
 /* 顶部导航栏 */
@@ -129,6 +160,7 @@ const logout = () => {
   box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.15),
               0px 1px 2px rgba(0, 0, 0, 0.30);
   z-index: 10; /* 确保在内容之上 */
+  flex-shrink: 0; /* 防止header被压缩 */
 }
 
 .logo {
@@ -180,40 +212,49 @@ const logout = () => {
   color: var(--on-surface-variant);
 }
 
-/* 主容器 */
+/* 主容器 - 三栏布局 */
 .main-container {
-  flex: 1;
+  flex: 1; /* 占据剩余高度 */
   display: flex;
-  overflow: hidden; /* 防止内容溢出导致滚动条 */
+  overflow: hidden; /* 防止主容器自身滚动 */
+  gap: 1px; /* Add a minimal gap for visual separation, adjust as needed */
+  background-color: var(--outline-variant); /* Background color for the gap */
 }
 
-/* 侧边栏 */
-.sidebar {
-  width: 256px; /* M3 Navigation Rail/Drawer width */
-  background-color: var(--md-sys-color-surface-tint-layer-1); /* M3 Surface + 5% Primary Tint */
-  /* border-right: 1px solid var(--outline-color); */ /* M3 uses elevation or distinct background */
+/* 左侧第一栏：全局导航 */
+.global-sidebar {
+  width: 220px;
+  background-color: var(--md-sys-color-surface-tint-layer-1); 
+  border-right: 1px solid var(--outline-variant); /* 分隔线 */
   display: flex;
   flex-direction: column;
-  padding: 12px 12px 24px 12px; /* M3 padding */
+  flex-shrink: 0; /* 防止被压缩 */
+  height: 100%; /* 确保占满父容器高度 */
+  overflow: hidden; /* 内部滚动，外部不滚动 */
+}
+
+.global-nav-scrollable {
+  flex-grow: 1; /* 占据可用空间 */
+  overflow-y: auto; /* 内容超出时滚动 */
+  padding: 12px; /* 内边距 */
 }
 
 .nav-menu {
-  flex-grow: 1;
+  /* 移除 flex-grow: 1 */
 }
 
 .nav-item {
   display: flex;
   align-items: center;
-  height: 56px; /* M3 Navigation Drawer Item Height */
-  padding: 0 16px 0 16px; /* M3 padding: horizontal 16px */
-  margin-bottom: 4px; /* Spacing between items */
-  border-radius: 28px; /* M3 Full Shape for active indicator */
-  color: var(--on-surface-variant); /* M3 On Surface Variant */
+  height: 56px; 
+  padding: 0 16px; 
+  margin-bottom: 4px; 
+  border-radius: 28px; 
+  color: var(--on-surface-variant); 
   text-decoration: none;
   transition: background-color 0.2s, color 0.2s;
-  /* M3 Label Large */
-  font-size: 0.875rem; /* 14px */
-  line-height: 1.25rem; /* 20px */
+  font-size: 0.875rem; 
+  line-height: 1.25rem; 
   letter-spacing: 0.1px;
   font-weight: 500;
 }
@@ -226,80 +267,69 @@ const logout = () => {
 .nav-item.active {
   background-color: var(--md-sys-color-secondary-container);
   color: var(--md-sys-color-on-secondary-container);
-  font-weight: 700; /* Bold for active state */
+  font-weight: 700; 
 }
 
 .nav-icon {
-  width: 24px; /* M3 Standard Icon Size */
+  width: 24px; 
   height: 24px;
-  margin-right: 12px; /* Space between icon and text */
+  margin-right: 12px; 
   flex-shrink: 0;
-}
-
-/* Active state icon color */
-.nav-item.active .nav-icon {
-  /* Icons should ideally adapt color via currentColor if they are monochrome SVGs */
-  /* If using multi-color icons, this won't work directly */
-  /* filter: brightness(0) saturate(100%) invert(13%) sepia(67%) saturate(5936%) hue-rotate(260deg) brightness(68%) contrast(105%); */ /* Example to colorize icon to --on-secondary-container */
-  /* Better approach: Use CSS masks or separate active icons if needed */
 }
 
 .nav-divider {
   height: 1px;
-  background-color: var(--outline-variant); /* M3 Outline Variant */
-  margin: 16px 0; /* M3 spacing */
+  background-color: var(--outline-variant); 
+  margin: 16px 0; 
 }
 
-/* 侧边栏底部 */
-.sidebar-footer {
-  /* border-top: 1px solid var(--outline-variant); M3 Footer has no top border */
-  /* padding-top: 16px; */
+.global-sidebar-footer {
+  flex-shrink: 0; /* 不压缩 */
+  padding: 12px 12px 24px 12px; /* 内边距 */
+  border-top: 1px solid var(--outline-variant); /* 顶部加分隔线 */
 }
 
 .footer-user-info {
   display: flex;
   align-items: center;
-  padding: 12px 4px; /* Adjust padding */
+  padding: 12px 4px; 
   margin-bottom: 8px;
 }
 
 .user-details {
-  margin-left: 16px; /* M3 medium spacing */
+  margin-left: 16px; 
 }
 
 .user-name {
-  /* M3 Title Small */
-  font-size: 0.875rem; /* 14px */
-  line-height: 1.25rem; /* 20px */
+  font-size: 0.875rem; 
+  line-height: 1.25rem; 
   font-weight: 500;
   color: var(--on-surface);
 }
 
 .user-email {
-  /* M3 Body Small */
-  font-size: 0.75rem; /* 12px */
-  line-height: 1rem; /* 16px */
+  font-size: 0.75rem; 
+  line-height: 1rem; 
   letter-spacing: 0.4px;
   color: var(--on-surface-variant);
 }
 
 .footer-actions {
-  /* No flex needed if items are block */
+  /* 样式保持不变 */
 }
 
 .footer-action-item {
   display: flex;
   align-items: center;
-  height: 48px; /* Reduced height for footer actions */
+  height: 48px; 
   padding: 0 16px;
-  border-radius: 24px; /* Adjust shape */
+  border-radius: 24px; 
   color: var(--on-surface-variant);
   text-decoration: none;
   cursor: pointer;
   transition: background-color 0.2s, color 0.2s;
-  /* M3 Label Large - same as nav items */
-  font-size: 0.875rem; /* 14px */
-  line-height: 1.25rem; /* 20px */
+  font-size: 0.875rem; 
+  line-height: 1.25rem; 
   letter-spacing: 0.1px;
   font-weight: 500;
 }
@@ -316,13 +346,24 @@ const logout = () => {
   flex-shrink: 0;
 }
 
+/* 中间第二栏：二级导航容器 */
+.secondary-nav-container {
+  /* Width is determined by the child component (e.g., 240px) */
+  flex-shrink: 0; /* Don't shrink */
+  height: 100%; /* Fill parent height */
+  overflow: hidden; /* Child component should handle its own scrolling */
+  background-color: var(--surface); /* Match surface color */
+}
 
-/* 主内容区 */
-.main-content {
-  flex: 1;
-  overflow-y: auto; /* Allow content to scroll */
-  padding: 24px; /* M3 padding */
-  background-color: var(--background-color);
+/* 右侧第三栏：主内容区容器 */
+.main-content-area {
+  flex: 1; /* Take remaining width */
+  height: 100%; /* Fill parent height */
+  overflow-y: auto; /* Allow vertical scrolling for the main content */
+  background-color: var(--background); /* Ensure background color */
+  /* Padding is often handled inside the view component, like QuestionBankView */
+  /* Example: add padding here if needed globally */
+  /* padding: 24px; */
 }
 
 /* Element Plus Dropdown Anpassungen */

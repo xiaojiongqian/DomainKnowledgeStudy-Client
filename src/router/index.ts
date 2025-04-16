@@ -11,42 +11,94 @@ const router = createRouter({
         {
           path: '',
           name: 'home',
-          component: () => import('../views/HomeView.vue')
+          components: {
+            mainContent: () => import('../views/HomeView.vue') 
+          }
         },
         {
           path: 'learning',
-          name: 'learning',
-          component: () => import('../views/LearningView.vue')
+          redirect: to => {
+            const firstPointId = '1';
+            return { name: 'learning-detail', params: { pointId: firstPointId } };
+          },
+          children: [
+            {
+              path: ':pointId?',
+              name: 'learning-detail',
+              components: {
+                secondaryNav: () => import('@/components/learning/LearningNav.vue'),
+                mainContent: () => import('@/views/LearningView.vue'),
+              },
+            }
+          ]
         },
         {
           path: 'insight-spot',
-          name: 'insight-spot',
-          component: () => import('../views/InsightSpotView.vue')
+          redirect: to => {
+            const firstSpotId = 'spot-1';
+            return { name: 'insight-spot-detail', params: { spotId: firstSpotId } };
+          },
+          children: [
+            {
+              path: ':spotId?',
+              name: 'insight-spot-detail',
+              components: {
+                secondaryNav: () => import('@/components/insight/InsightSpotNav.vue'),
+                mainContent: () => import('@/views/InsightSpotView.vue')
+              },
+            }
+          ]
         },
         {
           path: 'exam',
           name: 'exam',
-          component: () => import('../views/ExamView.vue')
+          components: {
+             mainContent: () => import('@/views/ExamView.vue')
+          }
         },
         {
           path: 'question-bank',
-          name: 'question-bank',
-          component: () => import('../views/QuestionBankView.vue')
+          redirect: to => {
+            return { name: 'question-bank-detail', query: { knowledgePoint: 'all' } };
+          },
+          children: [
+            {
+              path: '',
+              name: 'question-bank-detail',
+              components: {
+                secondaryNav: () => import('@/components/questionbank/QuestionBankNav.vue'),
+                mainContent: () => import('@/views/QuestionBankView.vue')
+              }
+            }
+          ]
         },
         {
           path: 'statistics',
           name: 'statistics',
-          component: () => import('../views/StatisticsView.vue')
+          components: {
+            mainContent: () => import('@/views/StatisticsView.vue')
+          }
         },
         {
           path: 'profile',
           name: 'profile',
-          component: () => import('../views/ProfileView.vue')
+          components: {
+             mainContent: () => import('@/views/ProfileView.vue')
+          }
         },
         {
           path: 'settings',
           name: 'settings',
-          component: () => import('../views/SettingsView.vue')
+          components: {
+             mainContent: () => import('@/views/SettingsView.vue')
+          }
+        },
+        {
+          path: 'sys-manage',
+          name: 'sys-manage',
+          components: {
+             mainContent: () => import('@/views/SystemManagementView.vue')
+          }
         }
       ]
     }
