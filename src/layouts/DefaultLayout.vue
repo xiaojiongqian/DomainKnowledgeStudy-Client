@@ -1,41 +1,17 @@
 <template>
   <div class="layout-container">
-    <!-- 顶部导航栏 -->
-    <header class="header">
-      <div class="logo">
-        <img src="../assets/Icon_knowledgehub.svg" alt="KnowledgeHub Logo" class="logo-icon" />
-        <span class="logo-text">KnowledgeHub</span>
-      </div>
-      <div class="header-menu">
-        <!-- 暂时移除首页链接，根据设计图侧边栏为主导航 -->
-        <!-- <router-link to="/" class="menu-item">首页</router-link> -->
-        <div class="user-menu">
-          <el-dropdown trigger="click">
-            <div class="user-info">
-              <el-avatar :size="32">{{ userInitial }}</el-avatar> <!-- Display initial -->
-              <span class="username">{{ userName }}</span>
-              <el-icon class="el-icon--right"><arrow-down /></el-icon>
-            </div>
-            <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item>
-                  <router-link to="/profile">个人信息</router-link>
-                </el-dropdown-item>
-                <el-dropdown-item>
-                  <router-link to="/settings">设置</router-link>
-                </el-dropdown-item>
-                <el-dropdown-item divided @click="logout">退出登录</el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
-        </div>
-      </div>
-    </header>
-
     <!-- 主容器（三栏布局） -->
     <div class="main-container">
       <!-- 左侧第一栏：全局导航 -->
       <aside class="global-sidebar">
+        <!-- 添加Logo到导航栏顶部 -->
+        <div class="sidebar-header">
+          <div class="logo">
+            <img src="../assets/Icon_knowledgehub.svg" alt="KnowledgeHub Logo" class="logo-icon" />
+            <span class="logo-text">KnowledgeHub</span>
+          </div>
+        </div>
+        
         <div class="global-nav-scrollable">
           <div class="nav-menu">
             <router-link to="/learning" class="nav-item" active-class="active">
@@ -103,11 +79,10 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { ArrowDown } from '@element-plus/icons-vue'
-import { useRouter, useRoute } from 'vue-router' // Import useRoute
+import { useRouter, useRoute } from 'vue-router'
 
 const router = useRouter()
-const route = useRoute() // Use route
+const route = useRoute()
 
 // 模拟用户信息，实际应从状态管理或API获取
 const userName = ref('John Smith')
@@ -136,7 +111,6 @@ const logout = () => {
   // 添加实际的退出登录逻辑，例如清除token，跳转到登录页
   // router.push('/login')
 }
-
 </script>
 
 <style scoped>
@@ -147,71 +121,6 @@ const logout = () => {
   overflow: hidden; /* 防止根容器滚动 */
 }
 
-/* 顶部导航栏 */
-.header {
-  height: 64px; /* M3 Top App Bar 高度通常为 64px */
-  background-color: var(--surface-color); /* 使用 M3 Surface 颜色 */
-  color: var(--on-surface-color); /* 使用 M3 Surface 上的文字颜色 */
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 24px; /* M3 边距 */
-  /* M3 Elevation Level 2 for Top App Bar */
-  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.15),
-              0px 1px 2px rgba(0, 0, 0, 0.30);
-  z-index: 10; /* 确保在内容之上 */
-  flex-shrink: 0; /* 防止header被压缩 */
-}
-
-.logo {
-  display: flex;
-  align-items: center;
-}
-
-.logo-icon {
-  width: 32px; /* 调整 Logo 图标大小 */
-  height: 32px;
-  margin-right: 16px; /* M3 medium spacing */
-}
-
-.logo-text {
-  font-size: 1.375rem; /* 22px, M3 Title Large */
-  font-weight: 400;
-  color: var(--on-surface-color);
-}
-
-.header-menu {
-  display: flex;
-  align-items: center;
-}
-
-.user-menu .user-info {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  padding: 8px;
-  border-radius: 16px; /* M3 shape medium */
-  transition: background-color 0.2s;
-}
-
-.user-menu .user-info:hover {
-  background-color: var(--md-sys-color-surface-tint-layer-1);
-}
-
-.username {
-  margin: 0 8px;
-  /* M3 Body Large */
-  font-size: 1rem; /* 16px */
-  line-height: 1.5rem; /* 24px */
-  letter-spacing: 0.5px;
-  font-weight: 500; /* Medium weight for names often looks good */
-  color: var(--on-surface-variant); /* M3 On Surface Variant for less emphasis */
-}
-
-.el-icon--right {
-  color: var(--on-surface-variant);
-}
-
 /* 主容器 - 三栏布局 */
 .main-container {
   flex: 1; /* 占据剩余高度 */
@@ -219,6 +128,7 @@ const logout = () => {
   overflow: hidden; /* 防止主容器自身滚动 */
   gap: 1px; /* Add a minimal gap for visual separation, adjust as needed */
   background-color: var(--outline-variant); /* Background color for the gap */
+  height: 100vh; /* 设置全屏高度 */
 }
 
 /* 左侧第一栏：全局导航 */
@@ -231,6 +141,30 @@ const logout = () => {
   flex-shrink: 0; /* 防止被压缩 */
   height: 100%; /* 确保占满父容器高度 */
   overflow: hidden; /* 内部滚动，外部不滚动 */
+}
+
+/* 添加侧边栏顶部Logo样式 */
+.sidebar-header {
+  padding: 16px 12px;
+  border-bottom: 1px solid var(--outline-variant);
+  flex-shrink: 0;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+.logo-icon {
+  width: 32px; /* 调整 Logo 图标大小 */
+  height: 32px;
+  margin-right: 12px; /* 减少一些间距 */
+}
+
+.logo-text {
+  font-size: 1.25rem; /* 20px, 稍微小一点 */
+  font-weight: 500;
+  color: var(--on-surface);
 }
 
 .global-nav-scrollable {
@@ -372,5 +306,4 @@ const logout = () => {
   text-decoration: none;
   display: block; /* Ensure link fills item */
 }
-
 </style> 
