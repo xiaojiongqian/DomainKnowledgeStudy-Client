@@ -46,7 +46,6 @@
     
     <!-- 没有选择知识点时显示的内容 -->
     <div v-else class="empty-state">
-      <div class="empty-icon">📚</div>
       <h3>请从左侧选择一个知识点开始学习</h3>
     </div>
   </main>
@@ -369,9 +368,10 @@ onMounted(() => { });
   color: var(--on-surface-variant, #49454F);
 }
 
-.empty-icon {
-  font-size: 64px;
-  margin-bottom: 16px;
+.empty-state h3 {
+  font-size: 18px;
+  font-weight: 500;
+  opacity: 0.9;
 }
 
 /* 辅助类 */

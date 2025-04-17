@@ -3,47 +3,59 @@
     <!-- 主容器（三栏布局） -->
     <div class="main-container">
       <!-- 左侧第一栏：全局导航 -->
-      <aside class="global-sidebar">
+      <aside class="global-sidebar" :class="{ 'collapsed': isNavCollapsed }">
         <!-- 添加Logo到导航栏顶部 -->
         <div class="sidebar-header">
-          <div class="logo">
-            <img src="../assets/Icon_knowledgehub.svg" alt="KnowledgeHub Logo" class="logo-icon" />
-            <span class="logo-text">KnowledgeHub</span>
-          </div>
+          <router-link to="/" class="logo-link">
+            <div class="logo">
+              <img src="../assets/Icon_knowledgehub.svg" alt="KnowHub Logo" class="logo-icon" />
+              <span class="logo-text" v-show="!isNavCollapsed">KnowHub</span>
+            </div>
+          </router-link>
+          
+          <!-- 切换按钮 -->
+          <button @click="toggleNavCollapse" class="toggle-nav-btn">
+            <img :src="isNavCollapsed ? '../assets/Icon_menu_open.svg' : '../assets/Icon_menu_close.svg'" 
+                 alt="Toggle Menu" 
+                 class="toggle-icon" 
+                 v-if="false" />
+            <span v-if="isNavCollapsed">❯</span>
+            <span v-else>❮</span>
+          </button>
         </div>
         
         <div class="global-nav-scrollable">
           <div class="nav-menu">
-            <router-link to="/learning" class="nav-item" active-class="active">
+            <router-link to="/learning" class="nav-item" :class="{ active: isRouteActive('learning') }" :title="isNavCollapsed ? 'Learning' : ''">
               <img src="../assets/Icon_learning.svg" alt="Learning" class="nav-icon" />
-              <span>Learning</span>
+              <span v-show="!isNavCollapsed">Learning</span>
             </router-link>
-            <router-link to="/exam" class="nav-item" active-class="active">
+            <router-link to="/exam" class="nav-item" :class="{ active: isRouteActive('exam') }" :title="isNavCollapsed ? 'Exam' : ''">
               <img src="../assets/Icon_exam.svg" alt="Exam" class="nav-icon" />
-              <span>Exam</span>
+              <span v-show="!isNavCollapsed">Exam</span>
             </router-link>
-            <router-link to="/statistics" class="nav-item" active-class="active">
+            <router-link to="/statistics" class="nav-item" :class="{ active: isRouteActive('statistics') }" :title="isNavCollapsed ? 'Statistics' : ''">
               <img src="../assets/Icon_statistics.svg" alt="Statistics" class="nav-icon" />
-              <span>Statistics</span>
+              <span v-show="!isNavCollapsed">Statistics</span>
             </router-link>
             <div class="nav-divider"></div>
-            <router-link to="/insight-spot" class="nav-item" active-class="active">
+            <router-link to="/insight-spot" class="nav-item" :class="{ active: isRouteActive('insight-spot') }" :title="isNavCollapsed ? 'Insight Spot' : ''">
               <img src="../assets/Icon_insightspot.svg" alt="Insight Spot" class="nav-icon" />
-              <span>Insight Spot</span>
+              <span v-show="!isNavCollapsed">Insight Spot</span>
             </router-link>
-            <router-link to="/question-bank" class="nav-item" active-class="active">
+            <router-link to="/question-bank" class="nav-item" :class="{ active: isRouteActive('question-bank') }" :title="isNavCollapsed ? 'Question Bank' : ''">
               <img src="../assets/Icon_quiz.svg" alt="Question Bank" class="nav-icon" />
-              <span>Question Bank</span>
+              <span v-show="!isNavCollapsed">Question Bank</span>
             </router-link>
-            <router-link to="/sys-manage" class="nav-item" active-class="active">
+            <router-link to="/sys-manage" class="nav-item" :class="{ active: isRouteActive('sys-manage') }" :title="isNavCollapsed ? 'Sys Manage' : ''">
               <img src="../assets/Icon_manage_accounts.svg" alt="Sys Manage" class="nav-icon" />
-              <span>Sys Manage</span>
+              <span v-show="!isNavCollapsed">Sys Manage</span>
             </router-link>
           </div>
         </div>
         <!-- 固定底部的用户信息与退出 -->
         <div class="global-sidebar-footer">
-          <div class="footer-user-info">
+          <div class="footer-user-info" v-show="!isNavCollapsed">
             <el-avatar :size="40">{{ userInitial }}</el-avatar>
             <div class="user-details">
               <div class="user-name">{{ userName }}</div>
@@ -51,13 +63,13 @@
             </div>
           </div>
           <div class="footer-actions">
-            <router-link to="/settings" class="footer-action-item">
+            <router-link to="/settings" class="footer-action-item" :class="{ active: isRouteActive('settings') }" :title="isNavCollapsed ? 'Settings' : ''">
               <img src="../assets/Icon_settings.svg" alt="Settings" class="action-icon" />
-              <span>Settings</span>
+              <span v-show="!isNavCollapsed">Settings</span>
             </router-link>
-            <div class="footer-action-item" @click="logout">
+            <div class="footer-action-item" @click="logout" :title="isNavCollapsed ? 'Log Out' : ''">
               <img src="../assets/Icon_logout.svg" alt="Log Out" class="action-icon" />
-              <span>Log Out</span>
+              <span v-show="!isNavCollapsed">Log Out</span>
             </div>
           </div>
         </div>
@@ -78,11 +90,73 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 
 const router = useRouter()
 const route = useRoute()
+
+// 导航栏参数
+const NAV_WIDTH = 220; // 导航栏完整宽度（非折叠）
+const NAV_COLLAPSED_WIDTH = 84; // 导航栏折叠宽度
+
+// 导航栏折叠状态
+const isNavCollapsed = ref(false)
+// 是否是手动控制折叠状态
+const isManuallyCollapsed = ref(false)
+// 窗口宽度
+const windowWidth = ref(window.innerWidth)
+
+// 根据窗口宽度计算是否应该自动折叠
+const shouldAutoCollapse = computed(() => {
+  // 当整体宽度小于左侧栏宽度的5倍时，应该折叠
+  return windowWidth.value < NAV_WIDTH * 5;
+})
+
+// 根据窗口宽度计算是否应该自动展开
+const shouldAutoExpand = computed(() => {
+  // 当左侧栏宽度小于整体页面的1/6时，应该展开
+  return windowWidth.value > NAV_WIDTH * 6;
+})
+
+// 监听窗口大小变化
+const handleResize = () => {
+  windowWidth.value = window.innerWidth;
+  
+  // 只有在非手动控制的情况下，才自动调整折叠状态
+  if (!isManuallyCollapsed.value) {
+    if (shouldAutoCollapse.value) {
+      isNavCollapsed.value = true;
+    } else if (shouldAutoExpand.value) {
+      isNavCollapsed.value = false;
+    }
+  }
+}
+
+// 切换导航栏折叠状态（手动控制）
+const toggleNavCollapse = () => {
+  isNavCollapsed.value = !isNavCollapsed.value;
+  isManuallyCollapsed.value = true; // 标记为手动控制
+  
+  // 2秒后重置手动控制标志，使自动响应重新生效
+  setTimeout(() => {
+    isManuallyCollapsed.value = false;
+  }, 2000);
+}
+
+// 在组件挂载时添加窗口大小变化的监听器
+onMounted(() => {
+  // 初始检查是否应该折叠
+  handleResize();
+  
+  // 添加窗口大小变化监听
+  window.addEventListener('resize', handleResize);
+})
+
+// 在组件卸载时移除监听器
+onUnmounted(() => {
+  window.removeEventListener('resize', handleResize);
+})
 
 // 模拟用户信息，实际应从状态管理或API获取
 const userName = ref('John Smith')
@@ -110,6 +184,12 @@ const logout = () => {
   console.log('User logged out')
   // 添加实际的退出登录逻辑，例如清除token，跳转到登录页
   // router.push('/login')
+}
+
+// 判断当前路由是否处于激活状态
+const isRouteActive = (routeName: string) => {
+  // 检查当前路由路径是否以指定的路由名称开头
+  return route.path.startsWith('/' + routeName);
 }
 </script>
 
@@ -141,6 +221,12 @@ const logout = () => {
   flex-shrink: 0; /* 防止被压缩 */
   height: 100%; /* 确保占满父容器高度 */
   overflow: hidden; /* 内部滚动，外部不滚动 */
+  transition: width 0.3s ease; /* 平滑过渡宽度变化 */
+}
+
+/* 折叠模式的导航栏样式 */
+.global-sidebar.collapsed {
+  width: 84px; /* 从56px增加50%到84px */
 }
 
 /* 添加侧边栏顶部Logo样式 */
@@ -148,23 +234,84 @@ const logout = () => {
   padding: 16px 12px;
   border-bottom: 1px solid var(--outline-variant);
   flex-shrink: 0;
+  display: flex;
+  justify-content: flex-start; /* 改为左对齐 */
+  align-items: center;
+  position: relative; /* 为绝对定位的子元素提供参考 */
+}
+
+/* 折叠状态下调整LOGO标题区域 */
+.global-sidebar.collapsed .sidebar-header {
+  justify-content: center; /* 居中显示 */
+  padding: 16px 0; /* 移除水平内边距 */
+}
+
+/* 切换按钮样式 */
+.toggle-nav-btn {
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  color: #999; /* 修改为灰色，不那么醒目 */
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+  padding: 0;
+  font-size: 14px;
+  margin-left: auto; /* 将按钮推到右侧 */
+  margin-right: 0px; /* 添加右侧边距 */
+  position: absolute; /* 使用绝对定位 */
+  right: 0px; /* 距离右侧12px */
+  top: 50%; /* 垂直居中 */
+  transform: translateY(-50%); /* 确保完全垂直居中 */
+  opacity: 0.6; /* 降低不透明度，使其更不醒目 */
+}
+
+.toggle-nav-btn:hover {
+  color: var(--on-surface);
+  opacity: 0.8; /* 悬停时略微提高不透明度，但仍保持低调 */
+}
+
+.toggle-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.logo-link {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  align-items: center;
 }
 
 .logo {
   display: flex;
   align-items: center;
+  gap: 12px;
+}
+
+/* 为折叠状态下的logo添加样式 */
+.global-sidebar.collapsed .logo {
+  justify-content: center;
 }
 
 .logo-icon {
-  width: 32px; /* 调整 Logo 图标大小 */
-  height: 32px;
-  margin-right: 12px; /* 减少一些间距 */
+  width: 24px;
+  height: 24px;
+  margin-left: 20px; /* 减少左侧边距，作为基准 */
+}
+
+/* 折叠状态下的logo图标样式 */
+.global-sidebar.collapsed .logo-icon {
+  margin-left: 0; /* 折叠状态下居中显示 */
 }
 
 .logo-text {
-  font-size: 1.25rem; /* 20px, 稍微小一点 */
-  font-weight: 500;
-  color: var(--on-surface);
+  font-size: 18px;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .global-nav-scrollable {
@@ -180,10 +327,10 @@ const logout = () => {
 .nav-item {
   display: flex;
   align-items: center;
-  height: 56px; 
+  height: 48px; /* 减小高度与底部按钮一致 */
   padding: 0 16px; 
-  margin-bottom: 4px; 
-  border-radius: 28px; 
+  margin-bottom: 2px; /* 减小底部间距 */
+  border-radius: 24px; /* 调整圆角以匹配高度 */
   color: var(--on-surface-variant); 
   text-decoration: none;
   transition: background-color 0.2s, color 0.2s;
@@ -191,6 +338,12 @@ const logout = () => {
   line-height: 1.25rem; 
   letter-spacing: 0.1px;
   font-weight: 500;
+}
+
+/* 折叠状态下导航项居中显示 */
+.global-sidebar.collapsed .nav-item {
+  justify-content: center;
+  padding: 0;
 }
 
 .nav-item:hover {
@@ -204,17 +357,35 @@ const logout = () => {
   font-weight: 700; 
 }
 
+/* 添加选中图标样式 */
+.nav-item.active .nav-icon {
+  /* 使用深紫色，符合Material Design的色彩规范 */
+  filter: brightness(0.8) hue-rotate(250deg) saturate(2);
+  /* 添加轻微的缩放效果，增强视觉反馈 */
+  transform: scale(1.1);
+}
+
 .nav-icon {
   width: 24px; 
   height: 24px;
   margin-right: 12px; 
+  margin-left: 20px; /* 与logo图标保持相同边距 */
   flex-shrink: 0;
+  transition: filter 0.2s, transform 0.2s; /* 添加过渡效果 */
+}
+
+/* 折叠状态下移除图标右侧间距 */
+.global-sidebar.collapsed .nav-icon {
+  margin-right: 0;
+  margin-left: 0; /* 折叠状态下移除左侧边距 */
 }
 
 .nav-divider {
   height: 1px;
-  background-color: var(--outline-variant); 
-  margin: 16px 0; 
+  background-color: #BABAC0; /* 保持中灰色 */
+  margin: 16px 8px; /* 保持水平边距 */
+  opacity: 0.8; /* 保持不透明度 */
+  border-radius: 0.5px; /* 减小圆角 */
 }
 
 .global-sidebar-footer {
@@ -223,11 +394,17 @@ const logout = () => {
   border-top: 1px solid var(--outline-variant); /* 顶部加分隔线 */
 }
 
+/* 折叠状态下底部区域调整 */
+.global-sidebar.collapsed .global-sidebar-footer {
+  padding: 12px 6px 24px 6px;
+}
+
 .footer-user-info {
   display: flex;
   align-items: center;
   padding: 12px 4px; 
   margin-bottom: 8px;
+  margin-left: 12px; /* 调整左侧边距，使头像与图标对齐 */
 }
 
 .user-details {
@@ -255,7 +432,7 @@ const logout = () => {
 .footer-action-item {
   display: flex;
   align-items: center;
-  height: 48px; 
+  height: 48px; /* 保持高度不变 */
   padding: 0 16px;
   border-radius: 24px; 
   color: var(--on-surface-variant);
@@ -266,6 +443,13 @@ const logout = () => {
   line-height: 1.25rem; 
   letter-spacing: 0.1px;
   font-weight: 500;
+  margin-bottom: 2px; /* 添加与导航项相同的底部间距 */
+}
+
+/* 折叠状态下底部操作项调整 */
+.global-sidebar.collapsed .footer-action-item {
+  justify-content: center;
+  padding: 0;
 }
 
 .footer-action-item:hover {
@@ -277,7 +461,29 @@ const logout = () => {
   width: 24px;
   height: 24px;
   margin-right: 12px;
+  margin-left: 20px; /* 与logo图标保持相同边距 */
   flex-shrink: 0;
+}
+
+/* 折叠状态下移除图标右侧间距 */
+.global-sidebar.collapsed .action-icon {
+  margin-right: 0;
+  margin-left: 0; /* 折叠状态下居中 */
+}
+
+/* 调整用户信息区域的布局 */
+.footer-user-info {
+  display: flex;
+  align-items: center;
+  padding: 12px 4px; 
+  margin-bottom: 8px;
+  margin-left: 12px; /* 调整左侧边距，使头像与图标对齐 */
+}
+
+/* 折叠状态下用户信息居中 */
+.global-sidebar.collapsed .footer-user-info {
+  margin-left: 0; /* 折叠状态下居中 */
+  justify-content: center;
 }
 
 /* 中间第二栏：二级导航容器 */
@@ -305,5 +511,31 @@ const logout = () => {
   color: inherit; /* Make link inherit color */
   text-decoration: none;
   display: block; /* Ensure link fills item */
+}
+
+/* 更特异的选择器和更明显的效果 */
+.global-sidebar .nav-menu .nav-item.active .nav-icon {
+  filter: brightness(0.7) hue-rotate(245deg) saturate(2.5);
+  transform: scale(1.15);
+}
+
+.global-sidebar .nav-menu .nav-item.active {
+  background-color: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+  font-weight: 700;
+  /* 移除阴影效果 */
+}
+
+/* 底部功能按钮选中状态样式 */
+.footer-action-item.active {
+  background-color: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+  font-weight: 700;
+}
+
+/* 底部功能按钮图标选中状态样式 */
+.footer-action-item.active .action-icon {
+  filter: brightness(0.7) hue-rotate(245deg) saturate(2.5);
+  transform: scale(1.15);
 }
 </style> 

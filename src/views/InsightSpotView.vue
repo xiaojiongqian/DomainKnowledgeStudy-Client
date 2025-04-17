@@ -1,101 +1,76 @@
 <template>
-  <main class="main-content">
-    <h1 class="content-title">Knowledge Insight Spot</h1>
-    
-    <!-- 配置面板 -->
-    <div class="config-panel elevation-1">
-      <div class="config-row">
-        <div class="config-item">
-          <span class="config-label body-medium">Knowledge spots total:</span>
-          <select v-model="knowledgeSpotsTotal" class="config-select">
-            <option value="auto">Auto</option>
-            <option v-for="n in 5" :key="n" :value="n">{{ n }}</option>
-          </select>
+  <div class="insight-spot-container">
+    <!-- 固定在顶部的标题和配置面板 -->
+    <div class="fixed-header">
+      <h1 class="content-title">Knowledge Insight Spot</h1>
+      
+      <!-- 配置面板 -->
+      <div class="config-panel">
+        <div class="config-row">
+          <div class="config-item">
+            <span class="config-label body-medium">Knowledge spots total:</span>
+            <select v-model="knowledgeSpotsTotal" class="config-select">
+              <option value="auto">Auto</option>
+              <option v-for="n in 5" :key="n" :value="n">{{ n }}</option>
+            </select>
+          </div>
+          
+          <div class="config-item">
+            <span class="config-label body-medium">Questions per spot:</span>
+            <select v-model="questionsPerSpot" class="config-select">
+              <option value="auto">Auto</option>
+              <option v-for="n in 5" :key="n" :value="n">{{ n }}</option>
+            </select>
+          </div>
         </div>
         
-        <div class="config-item">
-          <span class="config-label body-medium">Questions per spot:</span>
-          <select v-model="questionsPerSpot" class="config-select">
-            <option value="auto">Auto</option>
-            <option v-for="n in 5" :key="n" :value="n">{{ n }}</option>
-          </select>
-        </div>
-      </div>
-      
-      <div class="config-actions">
-        <button @click="generateSpots" class="config-btn generate-btn">
-          Gen Knowledge Spots
-        </button>
-        <button @click="applyConfig" class="config-btn apply-btn">
-          Apply
-        </button>
-      </div>
-    </div>
-    
-    <div v-if="activeSpot">
-      <!-- 内容标题 -->
-      <h1 class="content-title">{{ activeSpot.title }}</h1>
-      
-      <!-- 主要内容展示区 -->
-      <div class="knowledge-content-wrapper elevation-1">
-        <div class="knowledge-text body-large" v-html="activeSpot.content"></div>
-      </div>
-      
-      <!-- 问答表格 -->
-      <div class="qa-table-wrapper elevation-1">
-        <table class="qa-table">
-          <thead>
-            <tr>
-              <th>问题</th>
-              <th>答案</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(qa, index) in activeSpot.qaList" :key="index">
-              <td class="question-cell">{{ qa.question }}</td>
-              <td class="answer-cell">{{ qa.answer }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      
-      <!-- AI 问答交互区 -->
-      <div class="qa-interaction-area">
-        <!-- 提示性问题按钮区 -->
-        <div class="suggested-questions">
-          <button
-            v-for="(question, index) in suggestedQuestions"
-            :key="index"
-            class="question-pill"
-            @click="askQuestion(question)"
-          >
-            {{ question }}
+        <div class="config-actions">
+          <button @click="generateSpots" class="config-btn generate-btn">
+            Gen Knowledge Spots
           </button>
-        </div>
-        
-        <!-- 用户输入框 -->
-        <div class="input-area">
-          <input
-            v-model="userQuestion"
-            placeholder="输入您的问题..."
-            class="question-input"
-            @keyup.enter="submitQuestion"
-          />
-          <button @click="submitQuestion" class="submit-btn">
-            <svg viewBox="0 0 24 24" width="24" height="24">
-              <path fill="currentColor" d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path>
-            </svg>
+          <button @click="applyConfig" class="config-btn apply-btn">
+            Apply
           </button>
         </div>
       </div>
     </div>
     
-    <!-- 没有选择知识点时显示的内容 -->
-    <div v-else class="empty-state">
-      <div class="empty-icon">📚</div>
-      <h3>请从左侧选择一个洞察点开始学习</h3>
+    <!-- 可滚动的主内容区域 -->
+    <div class="scrollable-content">
+      <div v-if="activeSpot">
+        <!-- 内容标题 -->
+        <h1 class="content-title">{{ activeSpot.title }}</h1>
+        
+        <!-- 主要内容展示区 -->
+        <div class="knowledge-content-wrapper elevation-1">
+          <div class="knowledge-text body-large" v-html="activeSpot.content"></div>
+        </div>
+        
+        <!-- 问答表格 -->
+        <div class="qa-table-wrapper elevation-1">
+          <table class="qa-table">
+            <thead>
+              <tr>
+                <th>问题</th>
+                <th>答案</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(qa, index) in activeSpot.qaList" :key="index">
+                <td class="question-cell">{{ qa.question }}</td>
+                <td class="answer-cell">{{ qa.answer }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      <!-- 没有选择知识点时显示的内容 -->
+      <div v-else class="empty-state">
+        <h3>请从左侧选择一个知识点开始学习</h3>
+      </div>
     </div>
-  </main>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -119,10 +94,6 @@ interface InsightSpot {
 // 配置数据
 const knowledgeSpotsTotal = ref<number | 'auto'>('auto')
 const questionsPerSpot = ref<number | 'auto'>('auto')
-
-// 用户提问数据
-const userQuestion = ref('');
-const suggestedQuestions = ref<string[]>([]);
 
 // Mock 数据存储
 const allInsightSpots: Record<string, InsightSpot> = {
@@ -228,64 +199,11 @@ const activeSpot = computed<InsightSpot | undefined>(() => {
   return activeSpotId.value ? allInsightSpots[activeSpotId.value] : undefined;
 });
 
-// 加载对应知识点的建议问题
-const loadSuggestedQuestions = (spotId: string | null) => {
-  if (!spotId) {
-    suggestedQuestions.value = [];
-    return;
-  }
-  
-  const spot = allInsightSpots[spotId];
-  if (!spot) {
-    suggestedQuestions.value = [];
-    return;
-  }
-  
-  // 根据当前知识点加载建议问题
-  if (spotId === 'spot-1') {
-    suggestedQuestions.value = [
-      'Git的核心概念介绍一下？',
-      '什么叫工作区？和远程托管仓库有什么关系？',
-      'Git本地仓库和远程仓库是什么意思？'
-    ];
-  } else if (spotId === 'spot-2') {
-    suggestedQuestions.value = [
-      '分布式版本控制有什么好处？',
-      'Git如何实现分布式？',
-      '本地仓库和远程仓库如何同步？'
-    ];
-  } else {
-    suggestedQuestions.value = [
-      `关于${spot.title}有哪些常见问题？`,
-      `如何应用${spot.title}解决实际问题？`
-    ];
-  }
-};
-
 // 监听路由参数变化来加载对应的知识点数据
 watch(() => route.params.spotId, (newSpotId) => {
   const id = Array.isArray(newSpotId) ? newSpotId[0] : newSpotId;
   activeSpotId.value = id || null;
-  if (id) {
-    loadSuggestedQuestions(id);
-  } else {
-    loadSuggestedQuestions(null);
-  }
 }, { immediate: true });
-
-// 提交问题
-const submitQuestion = () => {
-  if (!userQuestion.value.trim() || !activeSpotId.value) return;
-  alert(`提交问题 (${activeSpotId.value}): ${userQuestion.value}`);
-  userQuestion.value = '';
-};
-
-// 预设问题直接提问
-const askQuestion = (question: string) => {
-  userQuestion.value = question;
-  // 可选：自动提交问题
-  // submitQuestion();
-};
 
 // 生成知识点
 const generateSpots = async () => {
@@ -299,109 +217,162 @@ const applyConfig = () => {
 
 onMounted(() => {
   // 初始化逻辑
+  // 查找并移除页面中可能存在的书本图标图片
+  document.querySelectorAll('img[src*="book"]').forEach(el => {
+    el.remove();
+  });
 });
 </script>
 
 <style scoped>
+.insight-spot-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden; /* 防止整体滚动 */
+  padding-left: 24px; /* 整体添加左侧内边距 */
+}
+
+.fixed-header {
+  flex-shrink: 0; /* 不收缩 */
+  padding: 24px 0 12px 0; /* 减少底部内边距 */
+  background-color: #FFFFFF; /* 固定为白色背景 */
+  z-index: 10; /* 确保浮动在上层 */
+  border-bottom: 1px solid var(--outline-variant, #E7E0EC); /* 添加底部边框 */
+  position: sticky; /* 固定在顶部 */
+  top: 0;
+  margin-bottom: 0; /* 确保没有额外的底部外边距 */
+}
+
+.scrollable-content {
+  flex: 1; /* 占据剩余空间 */
+  overflow-y: auto; /* 内容溢出时可滚动 */
+  padding: 12px 0; /* 减少顶部内边距 */
+}
+
 /* 主内容区 */
 .main-content {
   height: 100%;
   overflow-y: auto; 
-  padding: 32px; 
+  padding: 24px 16px; /* 调整内边距，增加左侧边距 */
   display: flex;
   flex-direction: column;
+  max-width: 1200px; /* 添加最大宽度 */
+  margin: 0 auto; /* 居中内容 */
 }
 
 .content-title {
-  font-size: 24px; 
-  line-height: 32px;
+  font-size: 28px; /* 增大标题字体 */
+  line-height: 36px;
   margin-bottom: 24px;
   font-weight: 500;
   color: var(--on-surface, #1C1B1F);
   flex-shrink: 0;
+  text-align: left; /* 确保标题左对齐 */
+}
+
+/* 固定头部中标题的特殊样式 */
+.fixed-header .content-title {
+  margin-bottom: 16px; /* 减小底部间距，使布局更紧凑 */
 }
 
 /* 配置面板 */
 .config-panel {
-  background-color: var(--surface-variant, #E7E0EC);
-  border-radius: 12px;
-  padding: 16px 24px;
-  margin-bottom: 24px;
+  background-color: transparent; /* 完全透明背景 */
+  border-radius: 0; /* 移除圆角 */
+  padding: 16px 0 8px 0; /* 减少内边距 */
+  margin-bottom: 0; 
   flex-shrink: 0;
+  box-shadow: none; /* 无阴影 */
 }
 
 .config-row {
   display: flex;
   align-items: center;
-  gap: 24px;
-  margin-bottom: 16px;
+  flex-wrap: wrap; /* 在小屏幕上允许换行 */
+  gap: 24px; /* 调整项目之间的间距 */
+  margin-bottom: 12px; /* 减少底部间距 */
 }
 
 .config-item {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px; /* 保持标签和选择器之间的间距 */
+  min-width: 280px; /* 设置最小宽度 */
 }
 
 .config-label {
   font-size: 14px;
   color: var(--on-surface-variant, #49454F);
+  white-space: nowrap; /* 防止标签换行 */
 }
 
 .config-select {
   height: 40px;
-  padding: 0 12px;
-  border-radius: 20px;
+  padding: 0 36px 0 16px; /* 右侧增加更多空间给下拉箭头 */
+  border-radius: 8px; /* 增加圆角 */
   border: 1px solid var(--outline, #79747E);
-  background-color: var(--surface-color, #FFFBFE);
+  background-color: #FFFFFF; /* 设置为白色 */
   font-size: 14px;
   color: var(--on-surface, #1C1B1F);
-  min-width: 80px;
+  min-width: 120px; /* 增加最小宽度 */
+  cursor: pointer; /* 添加指针样式 */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2379747E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center; /* 调整箭头位置 */
+  background-size: 18px;
+  appearance: none; /* 移除默认样式 */
+  -webkit-appearance: none; /* 兼容Safari */
+  -moz-appearance: none; /* 兼容Firefox */
 }
 
 .config-actions {
   display: flex;
   gap: 16px;
-  margin-top: 8px;
+  margin-top: 12px; /* 减少顶部间距 */
+  justify-content: flex-start; /* 按钮左对齐 */
 }
 
 .config-btn {
   height: 40px;
   padding: 0 24px;
-  border-radius: 20px;
+  border-radius: 8px; /* 增加圆角 */
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.2s;
   border: none;
 }
 
 .generate-btn {
-  background-color: var(--primary, #6750A4);
-  color: var(--on-primary, #FFFFFF);
+  background-color: #000000; /* 黑色背景 */
+  color: #FFFFFF; /* 白色文字 */
 }
 
 .generate-btn:hover {
-  background-color: #5641a5;
+  background-color: #333333; /* 悬停时稍微浅一点 */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .apply-btn {
-  background-color: transparent;
-  color: var(--primary, #6750A4);
-  border: 1px solid var(--outline, #79747E);
+  background-color: #E0E0E0; /* 浅灰色背景 */
+  color: #757575; /* 深灰色文字表示禁用状态 */
+  border: none;
+  cursor: not-allowed; /* 禁用鼠标指针 */
 }
 
 .apply-btn:hover {
-  background-color: rgba(103, 80, 164, 0.08);
+  background-color: #E0E0E0; /* 保持不变 */
+  box-shadow: none; /* 无悬停效果 */
 }
 
 /* 知识内容区域 */
 .knowledge-content-wrapper {
   background-color: var(--surface-color, #FFFBFE);
   border-radius: 16px;
-  padding: 24px;
-  margin-bottom: 24px; 
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08); 
+  padding: 32px; /* 增加内边距 */
+  margin-bottom: 32px; /* 增加底部间距 */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); /* 增强阴影 */
   flex-shrink: 0;
 }
 
@@ -436,26 +407,29 @@ onMounted(() => {
 .qa-table-wrapper {
   background-color: var(--surface-color, #FFFBFE);
   border-radius: 16px;
-  padding: 24px;
-  margin-bottom: 24px;
+  padding: 28px 32px; /* 增加内边距 */
+  margin-bottom: 32px; /* 增加底部间距 */
   flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); /* 增强阴影 */
 }
 
 .qa-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate; /* 使用分离边框模型 */
+  border-spacing: 0;
 }
 
 .qa-table th {
   text-align: left;
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--outline-variant, #E0E0E0);
+  padding: 16px 20px; /* 增加内边距 */
+  border-bottom: 2px solid var(--outline-variant, #E0E0E0); /* 增加底部边框粗细 */
   color: var(--on-surface-variant, #49454F);
   font-weight: 500;
+  font-size: 15px; /* 增加字体大小 */
 }
 
 .qa-table td {
-  padding: 16px;
+  padding: 20px; /* 增加单元格内边距 */
   border-bottom: 1px solid var(--outline-variant, #E0E0E0);
   vertical-align: top;
 }
@@ -470,78 +444,6 @@ onMounted(() => {
   color: var(--on-surface-variant, #49454F);
 }
 
-/* AI 问答交互区 */
-.qa-interaction-area {
-  margin-top: auto;
-  padding-top: 24px;
-  flex-shrink: 0;
-}
-
-/* 建议问题按钮 */
-.suggested-questions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px; 
-  margin-bottom: 24px;
-}
-
-.question-pill {
-  background-color: var(--surface-variant, #E7E0EC);
-  color: var(--on-surface-variant, #49454F);
-  padding: 8px 16px;
-  border-radius: 20px; 
-  font-size: 14px;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.question-pill:hover {
-  background-color: rgba(0, 0, 0, 0.08); 
-}
-
-/* 输入区域 */
-.input-area {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background-color: var(--surface-variant, #E7E0EC); 
-  border-radius: 28px; 
-  padding: 4px 4px 4px 20px; 
-}
-
-.question-input {
-  flex: 1;
-  border: none;
-  background-color: transparent;
-  padding: 12px 0; 
-  font-size: 16px;
-  color: var(--on-surface, #1C1B1F);
-}
-
-.question-input:focus {
-  outline: none;
-}
-
-.submit-btn {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%; 
-  background-color: var(--primary, #6750A4);
-  color: var(--on-primary, white);
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  flex-shrink: 0;
-}
-
-.submit-btn:hover {
-  background-color: #5641a5; 
-}
-
 /* 空状态 */
 .empty-state {
   display: flex;
@@ -552,20 +454,33 @@ onMounted(() => {
   color: var(--on-surface-variant, #49454F);
 }
 
-.empty-icon {
-  font-size: 64px;
-  margin-bottom: 16px;
+.empty-state h3 {
+  font-size: 18px;
+  font-weight: 500;
+  opacity: 0.9;
 }
 
 /* 辅助类 */
 .elevation-1 {
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+  box-shadow: none; /* 移除所有阴影效果 */
 }
 
-/* 响应式布局 */
+/* 响应式布局调整 */
 @media (max-width: 1024px) {
-  .content-area {
-    flex-direction: column;
+  .insight-spot-container {
+    padding-left: 16px; /* 较小屏幕上减少左侧内边距 */
   }
+}
+
+@media (max-width: 768px) {
+  .insight-spot-container {
+    padding-left: 12px; /* 移动设备上进一步减少左侧内边距 */
+  }
+}
+
+/* 移除图标相关样式 */
+img[src$=".png"],
+img[src*="book"] {
+  display: none !important;
 }
 </style> 

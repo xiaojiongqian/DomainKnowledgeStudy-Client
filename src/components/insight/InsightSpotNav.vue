@@ -7,7 +7,7 @@
         :class="['nav-item', { active: currentSpotId === spot.id }]"
         @click="selectSpot(spot.id)"
       >
-        <span class="nav-icon">{{ getStatusIcon(spot.status) }}</span>
+        <span class="nav-icon">{{ currentSpotId === spot.id ? '●' : '○' }}</span>
         {{ spot.title }}
       </div>
       <div v-if="isLoading" class="nav-item loading-item">加载中...</div>
@@ -64,7 +64,7 @@ const selectSpot = (id: string) => {
 // 获取状态图标
 const getStatusIcon = (status?: SpotStatus): string => {
   switch (status) {
-    case 'completed': return '✓';
+    case 'completed': return '●';
     case 'active': return '●'; 
     case 'default': 
     default: return '○';
@@ -104,11 +104,11 @@ onMounted(() => {
 .nav-item {
   display: flex;
   align-items: center;
-  padding: 12px 16px;
+  padding: 10px 16px;
   cursor: pointer;
   transition: background-color 0.2s, color 0.2s;
   border-radius: 24px;
-  margin-bottom: 4px;
+  margin-bottom: 3px;
   font-size: 14px;
   color: var(--on-surface-variant, #49454F);
 }
@@ -119,6 +119,7 @@ onMounted(() => {
   width: 20px;
   text-align: center;
   color: var(--on-surface-variant, #49454F);
+  transition: color 0.2s;
 }
 
 .nav-item:hover {
@@ -126,17 +127,18 @@ onMounted(() => {
 }
 
 .nav-item.active {
-  background-color: var(--secondary-container, #E8DEF8);
-  color: var(--on-secondary-container, #1D192B);
+  background-color: rgba(230, 230, 230, 0.35);
+  color: rgba(50, 50, 50, 0.9);
   font-weight: 500;
 }
 
-.nav-item.status-completed .nav-icon {
-  color: #4CAF50;
+.nav-item.active .nav-icon {
+  color: rgba(50, 50, 50, 0.9);
 }
 
-.nav-item.status-active .nav-icon {
-  color: #1976D2;
+.nav-item:not(.active) .nav-icon {
+  color: var(--on-surface-variant, #49454F);
+  position: relative;
 }
 
 .loading-item,

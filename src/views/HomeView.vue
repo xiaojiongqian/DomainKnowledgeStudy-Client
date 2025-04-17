@@ -51,36 +51,36 @@
 .home-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 40px 20px;
+  padding: 32px 16px;
 }
 
 h1 {
-  font-size: 32px;
+  font-size: 26px;
   color: var(--primary-color);
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   text-align: center;
 }
 
 .subtitle {
-  font-size: 18px;
+  font-size: 14px;
   color: #666;
   text-align: center;
   max-width: 800px;
-  margin: 0 auto 60px;
+  margin: 0 auto 48px;
   line-height: 1.5;
 }
 
 .feature-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 30px;
+  grid-template-columns: repeat(auto-fit, minmax(224px, 1fr));
+  gap: 24px;
 }
 
 .feature-card {
   background-color: #fff;
   border-radius: 8px;
-  padding: 30px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 24px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
   transition: transform 0.3s, box-shadow 0.3s;
   display: flex;
   flex-direction: column;
@@ -89,58 +89,52 @@ h1 {
 }
 
 .feature-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  transform: translateY(-4px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
 }
 
 .feature-icon {
-  width: 64px;
-  height: 64px;
-  margin-bottom: 20px;
+  width: 51px;
+  height: 51px;
+  margin-bottom: 16px;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .feature-icon img {
-  /* Force image to fill the container */
   width: 100%;
   height: 100%;
-  /* Remove max-width/max-height */
-  /* max-width: 100%; */
-  /* max-height: 100%; */
-
-  /* Remove the default filter */
-  /* filter: brightness(0) saturate(100%) invert(35%) sepia(43%) saturate(1546%) hue-rotate(228deg) brightness(90%) contrast(85%); */
-  transition: filter 0.3s ease; /* Add transition for smooth color change */
+  transition: filter 0.3s ease;
 }
 
 .feature-card:hover .feature-icon img {
-  /* Apply filter only on card hover */
   filter: brightness(0) saturate(100%) invert(35%) sepia(43%) saturate(1546%) hue-rotate(228deg) brightness(90%) contrast(85%);
 }
 
 .feature-card h3 {
-  font-size: 20px;
-  margin-bottom: 12px;
+  font-size: 16px;
+  margin-bottom: 10px;
   color: #333;
 }
 
 .feature-card p {
   color: #666;
+  font-size: 13px;
   line-height: 1.5;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
   flex-grow: 1;
 }
 
 .feature-link {
   display: inline-block;
-  padding: 8px 20px;
+  padding: 6px 16px;
   background-color: var(--primary-color);
   color: white;
   border-radius: 4px;
   text-decoration: none;
   font-weight: 500;
+  font-size: 13px;
   transition: background-color 0.2s;
 }
 

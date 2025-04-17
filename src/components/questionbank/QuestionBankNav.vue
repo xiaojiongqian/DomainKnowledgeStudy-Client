@@ -5,7 +5,7 @@
         :class="['nav-item', { active: !currentKnowledgePointId || currentKnowledgePointId === 'all' }]"
         @click="selectKnowledgePoint('all')"
       >
-        <span class="nav-icon">●</span>
+        <span class="nav-icon">{{ (!currentKnowledgePointId || currentKnowledgePointId === 'all') ? '●' : '○' }}</span>
         所有知识点
       </div>
       <div
@@ -14,7 +14,7 @@
         :class="['nav-item', { active: currentKnowledgePointId === kp.id }]"
         @click="selectKnowledgePoint(kp.id)"
       >
-        <span class="nav-icon">{{ getStatusIcon(kp.status) }}</span>
+        <span class="nav-icon">{{ currentKnowledgePointId === kp.id ? '●' : '○' }}</span>
         {{ kp.title }}
       </div>
       <div v-if="isLoading" class="nav-item loading-item">加载中...</div>
@@ -68,17 +68,6 @@ const selectKnowledgePoint = (id: string) => {
   });
 };
 
-// 获取状态图标
-const getStatusIcon = (status?: KnowledgePointStatus): string => {
-  switch (status) {
-    case 'high': return '★'; // 高优先级/重要性
-    case 'medium': return '⭐'; // 中等优先级/重要性
-    case 'low': return '☆'; // 低优先级/重要性
-    case 'default':
-    default: return '○';
-  }
-};
-
 // 从路由参数更新当前选中的知识点
 const updateActiveFromRoute = () => {
   const pointIdFromRoute = route.query.knowledgePoint as string | undefined;
@@ -96,7 +85,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* 样式与LearningNav保持一致 */
+/* 样式与InsightSpotNav保持一致 */
 .secondary-nav-content {
   padding: 16px 0;
   height: 100%;
@@ -110,11 +99,11 @@ onMounted(() => {
 .nav-item {
   display: flex;
   align-items: center;
-  padding: 12px 16px;
+  padding: 10px 16px;
   cursor: pointer;
   transition: background-color 0.2s, color 0.2s;
   border-radius: 24px;
-  margin-bottom: 4px;
+  margin-bottom: 3px;
   font-size: 14px;
   color: var(--on-surface-variant, #49454F);
 }
@@ -125,6 +114,7 @@ onMounted(() => {
   width: 20px;
   text-align: center;
   color: var(--on-surface-variant, #49454F);
+  transition: color 0.2s;
 }
 
 .nav-item:hover {
@@ -132,29 +122,18 @@ onMounted(() => {
 }
 
 .nav-item.active {
-  background-color: var(--secondary-container, #E8DEF8);
-  color: var(--on-secondary-container, #1D192B);
+  background-color: rgba(230, 230, 230, 0.35);
+  color: rgba(50, 50, 50, 0.9);
   font-weight: 500;
 }
 
-/* 状态图标颜色 */
-.nav-item .nav-icon {
+.nav-item.active .nav-icon {
+  color: rgba(50, 50, 50, 0.9);
+}
+
+.nav-item:not(.active) .nav-icon {
   color: var(--on-surface-variant, #49454F);
-}
-
-/* 高重要性知识点 */
-[class*="status-high"] .nav-icon {
-  color: #F44336; /* 红色表示高重要性 */
-}
-
-/* 中等重要性知识点 */
-[class*="status-medium"] .nav-icon {
-  color: #FF9800; /* 橙色表示中等重要性 */
-}
-
-/* 低重要性知识点 */
-[class*="status-low"] .nav-icon {
-  color: #4CAF50; /* 绿色表示低重要性 */
+  position: relative;
 }
 
 .loading-item,
